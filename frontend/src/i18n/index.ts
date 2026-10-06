@@ -70,9 +70,6 @@ export function detectLocale() {
     case /^es\b/.test(locale):
       locale = "es";
       break;
-    case /^en\b/.test(locale):
-      locale = "en";
-      break;
     case /^is\b/.test(locale):
       locale = "is";
       break;
@@ -142,7 +139,7 @@ export function detectLocale() {
       break;
 
     default:
-      locale = "en";
+      locale = "pt-br";
   }
 
   return locale;

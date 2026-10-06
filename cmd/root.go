@@ -432,7 +432,7 @@ func quickSetup(v *viper.Viper, s *storage.Storage) error {
 		UserHomeBasePath:      settings.DefaultUsersHomeBasePath,
 		Defaults: settings.UserDefaults{
 			Scope:                 ".",
-			Locale:                "en",
+			Locale:                "pt-br",
 			SingleClick:           false,
 			RedirectAfterCopyMove: true,
 			AceEditorTheme:        v.GetString("defaults.aceEditorTheme"),

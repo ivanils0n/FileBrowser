@@ -61,19 +61,7 @@
 
           <h3>{{ t("settings.branding") }}</h3>
 
-          <i18n-t
-            keypath="settings.brandingHelp"
-            tag="p"
-            class="small"
-            scope="global"
-          >
-            <a
-              class="link"
-              target="_blank"
-              href="https://github.com/filebrowser/filebrowser/blob/master/docs/customization.md#custom-branding"
-              >{{ t("settings.documentation") }}</a
-            >
-          </i18n-t>
+          <p class="small">{{ t("settings.brandingHelp") }}</p>
 
           <p>
             <input
@@ -206,12 +194,6 @@
           >
             <code>FILE</code>
             <code>SCOPE</code>
-            <a
-              class="link"
-              target="_blank"
-              href="https://github.com/filebrowser/filebrowser/blob/master/docs/command-execution.md#hook-runner"
-              >{{ t("settings.documentation") }}</a
-            >
           </i18n-t>
 
           <div
@@ -221,7 +203,13 @@
           >
             <input :id="key" type="checkbox" />
             <label :for="key">
-              <p>{{ capitalize(key) }}</p>
+              <p>
+                {{
+                  te(`settings.commandEvents.${key}`)
+                    ? t(`settings.commandEvents.${key}`)
+                    : capitalize(key)
+                }}
+              </p>
               <i class="material-icons">arrow_drop_down</i>
             </label>
             <div class="collapse">
@@ -272,7 +260,7 @@ const shellValue = ref<string>("");
 const $showError = inject<IToastError>("$showError")!;
 const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 
-const { t } = useI18n();
+const { t, te } = useI18n();
 
 const layoutStore = useLayoutStore();
 

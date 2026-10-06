@@ -52,6 +52,8 @@ func NewHandler(
 	api.Handle("/login", monkey(loginHandler(tokenExpirationTime), ""))
 	api.Handle("/signup", monkey(signupHandler, ""))
 	api.Handle("/renew", monkey(renewHandler(tokenExpirationTime), ""))
+	api.Handle("/logout", monkey(logoutHandler(tokenExpirationTime), "")).Methods("POST")
+	api.Handle("/session/close", monkey(sessionCloseHandler(tokenExpirationTime), "")).Methods("POST")
 
 	users := api.PathPrefix("/users").Subrouter()
 	users.Handle("", monkey(usersGetHandler, "")).Methods("GET")

@@ -1,6 +1,6 @@
 <template>
   <div id="login" :class="{ recaptcha: recaptcha }">
-    <form @submit="submit">
+    <form @submit="submit" @keydown.enter="focusNextField">
       <img :src="logoURL" alt="File Browser" />
       <h1>{{ name }}</h1>
       <p v-if="reason != null" class="logout-message">
@@ -72,6 +72,24 @@ const { t } = useI18n({});
 const toggleMode = () => (createMode.value = !createMode.value);
 
 const $showError = inject<IToastError>("$showError")!;
+
+// Enter moves to the next field (username -> password -> confirmation) and
+// only submits from the last one.
+const focusNextField = (event: KeyboardEvent) => {
+  const target = event.target as HTMLInputElement;
+  if (target.tagName !== "INPUT" || target.type === "submit") return;
+
+  const fields = Array.from(
+    (event.currentTarget as HTMLFormElement).querySelectorAll<HTMLInputElement>(
+      "input:not([type=submit])"
+    )
+  );
+  const next = fields[fields.indexOf(target) + 1];
+  if (next) {
+    event.preventDefault();
+    next.focus();
+  }
+};
 
 const reason = route.query["logout-reason"] ?? null;
 

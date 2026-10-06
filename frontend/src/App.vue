@@ -9,12 +9,19 @@
 import { ref, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { setHtmlLocale } from "./i18n";
-import { getMediaPreference, getTheme, setTheme } from "./utils/theme";
+import {
+  getMediaPreference,
+  getSavedTheme,
+  getTheme,
+  setTheme,
+} from "./utils/theme";
 import { name } from "./utils/constants";
 
 const { locale } = useI18n();
 
-const userTheme = ref<UserTheme>(getTheme() || getMediaPreference());
+const userTheme = ref<UserTheme>(
+  getSavedTheme() || getTheme() || getMediaPreference()
+);
 
 onMounted(() => {
   setTheme(userTheme.value);

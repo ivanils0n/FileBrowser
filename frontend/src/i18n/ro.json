@@ -205,7 +205,7 @@
     "brandingHelp": "Poți personaliza cum arată instanța ta de File Browser modificându-i numele, înlocuindu-i logo-ul, adăugându-i stiluri personalizate si chiar dezactivând linkurile catre GitHub.\nPentru mai multe informații despre branding fă click aici",
     "changePassword": "Schimbă parola",
     "commandRunner": "Rulează comenzi",
-    "commandRunnerHelp": "Aici poti seta comenzile care sunt executate in evenimente. Trebuie să scrii una pe linie. Variabilele de mediu {0} și {1} vor fi disponile, {0} fiind relativă la {1}. Pentru mai multe informații despre acest feature si variabilele de mediu disponibile, cititi {2}.",
+    "commandRunnerHelp": "Aici poti seta comenzile care sunt executate in evenimente. Trebuie să scrii una pe linie. Variabilele de mediu {0} și {1} vor fi disponile, {0} fiind relativă la {1}.",
     "commandsUpdated": "Comenzi actualizate!",
     "createUserDir": "Auto create user home dir while adding new user",
     "minimumPasswordLength": "Minimum password length",

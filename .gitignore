@@ -37,3 +37,24 @@ build/
 
 default.nix
 Dockerfile.dev
+
+# Binaries and local databases produced by running the app
+*.exe
+*.sqlite
+
+# Logs
+*.log
+pnpm-debug.log*
+
+# Test and build caches
+coverage/
+*.tsbuildinfo
+.pnpm-store/
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Local tooling settings
+.claude/settings.local.json
+.claude/worktrees/

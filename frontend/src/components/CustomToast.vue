@@ -1,22 +1,13 @@
 <template>
   <div class="t-container">
     <span>{{ message }}</span>
-    <button v-if="isReport" class="action" @click.stop="clicked">
-      {{ reportText }}
-    </button>
   </div>
 </template>
 
 <script setup lang="ts">
 defineProps<{
   message: string;
-  reportText?: string;
-  isReport?: boolean;
 }>();
-
-const clicked = () => {
-  window.open("https://github.com/filebrowser/filebrowser/issues/new/choose");
-};
 </script>
 
 <style scoped>

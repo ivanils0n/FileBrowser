@@ -6,13 +6,54 @@ import { authMethod, baseURL, noAuth, logoutPage } from "./constants";
 import { StatusError } from "@/api/utils";
 import { setSafeTimeout } from "@/api/utils";
 
+// The token lives in sessionStorage so it is dropped when the tab closes, and
+// the server is told to revoke the session as well (see registerSessionClose).
+function storeToken(token: string) {
+  try {
+    sessionStorage.setItem("jwt", token);
+    // tokens used to be kept in localStorage, shared across tabs and restarts
+    localStorage.removeItem("jwt");
+  } catch {
+    // storage unavailable: the session just won't survive a reload
+  }
+}
+
+function storedToken(): string {
+  try {
+    return sessionStorage.getItem("jwt") || "";
+  } catch {
+    return "";
+  }
+}
+
+let sessionCloseRegistered = false;
+
+// Tells the server the tab is going away so it revokes the session after a
+// short grace period. A reload also fires pagehide, but the reloaded page uses
+// the session again within the grace period, which cancels the revocation.
+function registerSessionClose() {
+  if (sessionCloseRegistered) return;
+  sessionCloseRegistered = true;
+
+  window.addEventListener("pagehide", () => {
+    const jwt = useAuthStore().jwt;
+    if (!jwt) return;
+    // sendBeacon cannot set headers, so the token goes in the body
+    navigator.sendBeacon(
+      `${baseURL}/api/session/close`,
+      new Blob([jwt], { type: "text/plain" })
+    );
+  });
+}
+
 export function parseToken(token: string) {
   // falsy or malformed jwt will throw InvalidTokenError
   const data = jwtDecode<JwtPayload & { user: IUser }>(token);
 
   document.cookie = `auth=${token}; Path=/; SameSite=Strict;`;
 
-  localStorage.setItem("jwt", token);
+  storeToken(token);
+  registerSessionClose();
 
   const authStore = useAuthStore();
   authStore.jwt = token;
@@ -39,8 +80,9 @@ export function parseToken(token: string) {
 
 export async function validateLogin() {
   try {
-    if (localStorage.getItem("jwt")) {
-      await renew(<string>localStorage.getItem("jwt"));
+    const jwt = storedToken();
+    if (jwt) {
+      await renew(jwt);
     }
   } catch (error) {
     console.warn("Invalid JWT token in storage");
@@ -119,9 +161,26 @@ export function logout(reason?: string) {
   document.cookie = "auth=; Max-Age=0; Path=/; SameSite=Strict;";
 
   const authStore = useAuthStore();
+
+  // revoke the session on the server so the token stops working even if copied
+  if (authStore.jwt) {
+    fetch(`${baseURL}/api/logout`, {
+      method: "POST",
+      headers: { "X-Auth": authStore.jwt },
+      keepalive: true,
+    }).catch(() => {
+      // best effort: the token still expires on its own
+    });
+  }
+
   authStore.clearUser();
 
-  localStorage.setItem("jwt", "");
+  try {
+    sessionStorage.removeItem("jwt");
+    localStorage.removeItem("jwt");
+  } catch {
+    // storage unavailable
+  }
   if (noAuth) {
     window.location.reload();
   } else if (logoutPage !== "/login") {

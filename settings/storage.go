@@ -76,7 +76,7 @@ func (s *Storage) Save(set *Settings) error {
 	}
 
 	if set.Defaults.Locale == "" {
-		set.Defaults.Locale = "en"
+		set.Defaults.Locale = "pt-br"
 	}
 
 	if set.Defaults.Commands == nil {

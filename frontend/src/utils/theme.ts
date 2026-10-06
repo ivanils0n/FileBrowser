@@ -15,13 +15,26 @@ export const setTheme = (theme: UserTheme) => {
   }
 };
 
-export const toggleTheme = (): void => {
-  const activeTheme = getTheme();
-  if (activeTheme === "light") {
-    setTheme("dark");
-  } else {
-    setTheme("light");
+const STORAGE_KEY = "fb-theme";
+
+export const getSavedTheme = (): UserTheme | null => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved === "light" || saved === "dark" ? saved : null;
+  } catch {
+    return null;
   }
+};
+
+export const toggleTheme = (): UserTheme => {
+  const next: UserTheme = getTheme() === "light" ? "dark" : "light";
+  setTheme(next);
+  try {
+    localStorage.setItem(STORAGE_KEY, next);
+  } catch {
+    // storage unavailable; the choice just won't persist
+  }
+  return next;
 };
 
 export const getMediaPreference = (): UserTheme => {

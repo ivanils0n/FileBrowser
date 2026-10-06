@@ -40,7 +40,8 @@ type userInfo struct {
 }
 
 type authToken struct {
-	User userInfo `json:"user"`
+	User    userInfo `json:"user"`
+	Session string   `json:"sid,omitempty"`
 	jwt.RegisteredClaims
 }
 
@@ -124,6 +125,14 @@ func withUser(fn handleFunc) handleFunc {
 		token, err := request.ParseFromRequest(r, &extractor{}, keyFunc, request.WithClaims(&tk), request.WithParser(p))
 		if (err != nil || !token.Valid) && !renewableErr(err, r, d, &tk) {
 			return http.StatusUnauthorized, nil
+		}
+
+		if tk.Session != "" {
+			if sessions.isRevoked(tk.Session) {
+				return http.StatusUnauthorized, nil
+			}
+			sessions.cancelClose(tk.Session)
+			d.session = tk.Session
 		}
 
 		expiresSoon := tk.ExpiresAt != nil && time.Until(tk.ExpiresAt.Time) < time.Hour
@@ -250,7 +259,18 @@ func renewHandler(tokenExpireTime time.Duration) handleFunc {
 }
 
 func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.User, tokenExpirationTime time.Duration) (int, error) {
+	// A renewal keeps the session of the token it replaces, so that revoking it
+	// also revokes the renewed tokens.
+	session := d.session
+	if session == "" {
+		var err error
+		if session, err = newSessionID(); err != nil {
+			return http.StatusInternalServerError, err
+		}
+	}
+
 	claims := &authToken{
+		Session: session,
 		User: userInfo{
 			ID:                    user.ID,
 			Locale:                user.Locale,

@@ -2,7 +2,7 @@
   <div v-show="active" @click="closeHovers" class="overlay"></div>
   <nav :class="{ active }">
     <template v-if="isLoggedIn">
-      <button @click="toAccountSettings" class="action">
+      <button @click="toAccountSettings" class="action nav-user">
         <i class="material-icons">person</i>
         <span>{{ user.username }}</span>
       </button>
@@ -95,22 +95,15 @@
       {{ $t("sidebar.diskUsed", { used: usage.used, total: usage.total }) }}
     </div>
 
-    <p class="credits">
-      <span>
-        <span v-if="disableExternal">File Browser</span>
-        <a
-          v-else
-          rel="noopener noreferrer"
-          target="_blank"
-          href="https://github.com/filebrowser/filebrowser"
-          >File Browser</a
-        >
-        <span> {{ " " }} {{ version }}</span>
-      </span>
-      <span>
-        <a @click="help">{{ $t("sidebar.help") }}</a>
-      </span>
-    </p>
+    <button
+      class="help-button"
+      @click="help"
+      :aria-label="$t('sidebar.help')"
+      :title="$t('sidebar.help')"
+    >
+      <i class="material-icons">help_outline</i>
+      <span>{{ $t("sidebar.help") }}</span>
+    </button>
   </nav>
 </template>
 

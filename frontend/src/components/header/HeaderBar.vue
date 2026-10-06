@@ -11,6 +11,13 @@
 
     <slot />
 
+    <Action
+      class="theme-button"
+      :icon="isDark ? 'light_mode' : 'dark_mode'"
+      :label="t('buttons.toggleTheme')"
+      @action="onToggleTheme"
+    />
+
     <div
       id="dropdown"
       :class="{ active: layoutStore.currentPromptName === 'more' }"
@@ -38,9 +45,15 @@
 import { useLayoutStore } from "@/stores/layout";
 
 import { logoURL } from "@/utils/constants";
+import {
+  getMediaPreference,
+  getSavedTheme,
+  getTheme,
+  toggleTheme,
+} from "@/utils/theme";
 
 import Action from "@/components/header/Action.vue";
-import { computed, useSlots } from "vue";
+import { computed, ref, useSlots } from "vue";
 import { useI18n } from "vue-i18n";
 
 defineProps<{
@@ -54,6 +67,14 @@ const slots = useSlots();
 const { t } = useI18n();
 
 const ifActionsSlot = computed(() => (slots.actions ? true : false));
+
+// App.vue applies the theme in onMounted, after this setup runs
+const isDark = ref(
+  (getSavedTheme() || getTheme() || getMediaPreference()) === "dark"
+);
+const onToggleTheme = () => {
+  isDark.value = toggleTheme() === "dark";
+};
 </script>
 
 <style></style>
