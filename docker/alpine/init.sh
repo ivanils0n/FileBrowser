@@ -32,4 +32,4 @@ if [ -z "$config_file" ]; then
   set -- --config=/config/settings.json "$@"                                                                                                       
 fi                                                                                                                                                                                                                                                                                                                                                             
 
-exec filebrowser "$@"
+exec filebrowser --address=0.0.0.0 --port=80 "$@"
